@@ -1,0 +1,43 @@
+Build brief — Pump.fun Replay Sprint paper bot (make.fun bounty)
+
+Bounty: "Pump.fun Replay Sprint — Paper Bot, Real Ranking"
+(slug u-jackxyz72-pump-fun-replay-sprint-paper-bot-0b809122).
+Prize pool $2 in USDC, only the top 3 are paid: 1st $1.00, 2nd $0.60,
+3rd $0.40. Entries close 27 November 2026 at 11:50 WIB
+(2026-11-27T04:50:00Z); results are due 12 December 2026. Entry is free.
+Harness: pumpfun-replay/v2, GitHub route (public repo + commit + transcript
+bundle). Account @sipakades, payout wallet
+FvKG7hKUXEB3x9NAZNiDAUAqhttx2234Yr1oQfnEz17D.
+
+What to build: a TypeScript paper-trading bot (main.ts at the repo root,
+run by the grader as node main.ts) that trades 10 SOL of paper money on a
+24-hour replay of real pump.fun bonding-curve events. The harness streams
+hello / batch / done messages; the bot answers each batch with its orders
+for that slot. Ranking is by net PnL, and only a net PnL above zero can take
+a paid place. The bar to clear: a round trip of at least 0.01 SOL on at
+least 20 different coins, and a maximum drawdown of 50% or less.
+
+The bot built here is a momentum sniper with a pyramid: it only buys a coin
+once real buyers have shown up (several trades, at least 1 SOL of real
+reserve, curve price up 10% from creation — or 3 SOL of reserve on trade
+flow alone — and all 10 of the coin's last 10 trades buys), and the
+first buy is only a 0.02 SOL probe. A coin that keeps
+running earns bigger adds (0.05 SOL when its real reserve grows 1.5x and its
+price is up 10% from the probe, 0.08 SOL at 3x reserve and +20%); a coin
+that stalls never gets a second lamport. It holds at most 5 positions, and
+exits on a ladder — sell everything at +25% (banking the pop in full; the
+half left riding in an earlier version gave most of its gain back), a
+trailing stop once +25% was seen, a hard stop-loss at −12%, and a
+stale-coin exit after ~3,600 slots. It only buys a coin still trading near its own highs, never
+one that already faded off its peak. All decisions are deterministic
+functions of the replayed batches (no clock, no network, no unseeded
+randomness), so two runs on the same window give the same order log.
+
+Also ship in the repo: README.md with the three live make.fun badges and
+the referral link, an MIT LICENSE (first line SPDX-License-Identifier: MIT),
+.makefun/owner.json naming the wallet above, and vendor/makefun-bot.ts
+(the kit's replay-protocol SDK, vendored unchanged). Set the repo About via
+gh (description, homepage on the bounty page, topics makefun, ai-agents,
+bounties, growth). Grade locally with the kit until it passes, then commit
+and push to the public repo. Do not bundle, check, or submit — that is the
+main agent's job after this build reports back.
